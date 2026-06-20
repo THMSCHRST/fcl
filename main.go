@@ -1,12 +1,12 @@
 package main
 
 import (
+	"fcl/helper"
 	"fcl/td"
 	"fcl/w"
 	"runtime"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
-	"github.com/go-gl/glfw/v3.4/glfw"
 )
 
 func init() {
@@ -14,12 +14,12 @@ func init() {
 }
 
 func main() {
-	window := w.InitWindow(td.NewVec2(500,500),"Test")
+	window, err := w.NewWindow(td.NewVec2(500,500),"Hello"); helper.Check(err)
+	defer window.Close()
 
     for !window.ShouldClose() {
         gl.Clear(gl.COLOR_BUFFER_BIT)
         // draw here
-        window.SwapBuffers()
-        glfw.PollEvents()
+		window.EndFrame()
     }
 }
