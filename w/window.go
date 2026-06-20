@@ -3,6 +3,7 @@ package w
 import (
 	"fcl/td"
 	"runtime"
+	"time"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/glfw/v3.4/glfw"
@@ -10,13 +11,17 @@ import (
 
 type Window struct {
 	glfwWindow *glfw.Window
+	lastFrame  time.Time
 }
 
 // NewWindow initializes glfw and opengl and returns a window with the given parameters.
 func NewWindow(size td.Vec2, title string) (*Window, error) {
 	runtime.LockOSThread()
 
-	if err := glfw.Init(); err != nil {glfw.Terminate(); return nil, err}
+	if err := glfw.Init(); err != nil {
+		glfw.Terminate()
+		return nil, err
+	}
 
 	// req opengl 4.6
 	glfw.WindowHint(glfw.ContextVersionMajor, 4)
@@ -25,29 +30,29 @@ func NewWindow(size td.Vec2, title string) (*Window, error) {
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 
 	window, err := glfw.CreateWindow(int(size.X), int(size.Y), title, nil, nil)
-    if err != nil {
-        glfw.Terminate()
-        return nil, err
-    }
+	if err != nil {
+		glfw.Terminate()
+		return nil, err
+	}
 
 	window.MakeContextCurrent()
 
-    if err := gl.Init(); err != nil {
-        window.Destroy()
-        glfw.Terminate()
-        return nil, err
-    }
+	if err := gl.Init(); err != nil {
+		window.Destroy()
+		glfw.Terminate()
+		return nil, err
+	}
 
 	w, h := window.GetFramebufferSize()
 	gl.Viewport(0, 0, int32(w), int32(h)) // set viewport
 	gl.ClearColor(1, 1, 1, 1.0)
 
-	return &Window{glfwWindow: window}, nil
+	return &Window{glfwWindow: window, lastFrame: time.Now()}, nil
 }
 
 // for w.ShouldClose() {//code here}
 func (w *Window) ShouldClose() bool {
-    return w.glfwWindow.ShouldClose()
+	return w.glfwWindow.ShouldClose()
 }
 
 // Close terminates glfw. You probably need to use this with 'defer w.Close()'.
@@ -62,12 +67,24 @@ func (w *Window) EndFrame() {
 	w.PollEvents()
 }
 
+func (w *Window) StartFrame() {
+	w.lastFrame = time.Now()
+}
+
 //swap to new frame
 func (w *Window) SwapBuffers() {
-    w.glfwWindow.SwapBuffers()
+	w.glfwWindow.SwapBuffers()
 }
 
 // PollEvents processes window events (input, resize, etc).
 func (w *Window) PollEvents() {
-    glfw.PollEvents()
+	glfw.PollEvents()
+}
+
+func (w *Window) GetDeltaTime() float32 {
+	return float32(time.Since(w.lastFrame).Seconds())
+}
+
+func (w *Window) IsKeyDown(key td.Key) bool {
+	return w.glfwWindow.GetKey(glfw.Key(key)) == glfw.Press
 }
