@@ -2,6 +2,7 @@ package main
 
 import (
 	"fcl/helper"
+	"fcl/meshUtil"
 	"fcl/render"
 	"fcl/td"
 	"fcl/w"
@@ -25,7 +26,25 @@ func main() {
 
 	defer program.Destroy()
 
-	mesh, err := render.NewMesh(render.CubeVertices, render.CubeIndices)
+    builder := meshUtil.NewMeshBuilder()
+
+    layout := []render.Attribute{
+        {Index: 0, Size: 3, Offset: 0},
+        {Index: 1, Size: 3, Offset: 12},
+    }
+
+    apex := mgl32.Vec3{0, 1.5, 0}
+    base1 := mgl32.Vec3{-1, -1, -1}
+    base2 := mgl32.Vec3{1, -1, -1}
+    base3 := mgl32.Vec3{1, -1, 1}
+    base4 := mgl32.Vec3{-1, -1, 1}
+
+    builder.AddTriangle(apex, base1, base2, mgl32.Vec3{1, 0, 0})
+    builder.AddTriangle(apex, base2, base3, mgl32.Vec3{0, 1, 0})
+    builder.AddTriangle(apex, base3, base4, mgl32.Vec3{0, 0, 1})
+    builder.AddTriangle(apex, base4, base1, mgl32.Vec3{1, 1, 0})
+
+	mesh, err := builder.Build(layout)
 	helper.Check(err)
 
 	defer mesh.Destroy()

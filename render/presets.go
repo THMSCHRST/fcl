@@ -67,4 +67,8 @@ var (
 		0, 4, 5, 0, 5, 1,
 		3, 2, 6, 3, 6, 7,
 	}
+	DefaultLayout = []Attribute{
+		{Index: 0, Size: 3, Offset: 0},
+		{Index: 1, Size: 3, Offset: 12},
+	}
 )
