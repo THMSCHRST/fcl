@@ -43,7 +43,7 @@ func main() {
 
 	defer m.Destroy() //prevent memory leaks
 
-	cam := window.NewCamera(td.NewVec3(5, 0, 0), td.NewVec3(-1, 0, 0), *win, 45) //creates a new camera
+	cam := window.NewCamera(td.NewVec3(5, 0, 0), td.NewVec3(-1, 0, 0), *win, 45, 100) //creates a new camera
 
 	var angle float32
 	pos := td.NewVec3(0, 0, 0)

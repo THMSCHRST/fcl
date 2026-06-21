@@ -14,7 +14,7 @@ type Camera struct {
 	FOV              float32
 }
 
-func NewCamera(pos, dir td.Vec3, window Window, fov float32) Camera {
+func NewCamera(pos, dir td.Vec3, window Window, fov, renderDistance float32) Camera {
 	w, h := window.GlfwWindow.GetFramebufferSize()
 	return Camera{
 		Pos: pos,
@@ -28,7 +28,7 @@ func NewCamera(pos, dir td.Vec3, window Window, fov float32) Camera {
 			mgl32.DegToRad(fov),
 			float32(w)/float32(h),
 			0.1,
-			100.0,
+			renderDistance,
 		),
 		FOV: fov,
 	}
