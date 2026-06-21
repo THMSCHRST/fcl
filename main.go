@@ -6,33 +6,29 @@ import (
 	"fcl/render"
 	"fcl/td"
 	"fcl/w"
-	"runtime"
+	"fmt"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-func init() {
-	runtime.LockOSThread()
-}
-
 func main() {
-	window, err := w.NewWindow(td.NewVec2(500, 500), "Window")
+	window, err := w.NewWindow(td.NewVec2(500, 500), "Window") //This creates a new window
 	helper.Check(err)
-	defer window.Close()
+	defer window.Close() //Close the window after main func exit
 
-	program, err := render.NewProgram(render.VertexShader3D, render.DefaultFragmentShader)
+	//A program is a bundle of vertex and fragment shader that is used to render a mesh
+	program, err := render.NewProgram(render.VertexShader3D, render.DefaultFragmentShader) //render.VertexShader3D needs a 'model' uniform which is a transform, a 'view' uniform which should be cam.ViewMatrix and a 'projection' uniform which should be cam.ProjectionMatrix
 	helper.Check(err)
 
-	defer program.Destroy()
+	defer program.Destroy() //Delete the program afterwards to prevent memory leaks
 
-    builder := meshUtil.NewMeshBuilder()
+    builder := meshUtil.NewMeshBuilder() //A mesh builder can build a mesh from a number of triangles
 
-    layout := []render.Attribute{
-        {Index: 0, Size: 3, Offset: 0},
-        {Index: 1, Size: 3, Offset: 12},
-    }
+    layout, err := render.NewLayout(2,[]int{3,3}) //A layout defines how a meshes uniforms work (this needs to match the reqs of the shaders)
+	helper.Check(err)
 
+	//building a mesh using triangles
     apex := mgl32.Vec3{0, 1.5, 0}
     base1 := mgl32.Vec3{-1, -1, -1}
     base2 := mgl32.Vec3{1, -1, -1}
@@ -44,21 +40,22 @@ func main() {
     builder.AddTriangle(apex, base3, base4, mgl32.Vec3{0, 0, 1})
     builder.AddTriangle(apex, base4, base1, mgl32.Vec3{1, 1, 0})
 
-	mesh, err := builder.Build(layout)
+	mesh, err := builder.Build(layout) //build a mesh with a layout
 	helper.Check(err)
 
-	defer mesh.Destroy()
+	defer mesh.Destroy() //prevent memory leaks
 
-	cam := render.NewCamera(td.NewVec3(5, 0, 0), td.NewVec3(-1, 0, 0), *window, 45)
+	cam := render.NewCamera(td.NewVec3(5, 0, 0), td.NewVec3(-1, 0, 0), *window, 45) //creates a new camera
 
 	var angle float32
 	pos := td.NewVec3(0, 0, 0)
 	var speed float32 = 4
 
-	render.EnableDepth()
+	render.EnableDepth() //This is important for 3d rendering
 
 	for !window.ShouldClose() {
 		deltaTime := window.GetDeltaTime()
+		fmt.Println(window.GetFPS())
 
 		if window.IsKeyDown(td.KeyW) {
 			cam.Pos.X -= speed * deltaTime
@@ -81,9 +78,9 @@ func main() {
 
 		angle += deltaTime
 
-		cam.Update()
+		cam.Update() //Only needed if the camera isnt static
 
-		render.UpdateDepth()
+		render.UpdateDepth() //Also very important
 
 		rotationMatrix := mgl32.HomogRotate3D(angle, mgl32.Vec3{0, 1, 0})
 
@@ -91,7 +88,7 @@ func main() {
 
 		modelMatrix := translationMatrix.Mul4(rotationMatrix)
 
-		window.StartFrame()
+		window.StartFrame() //start drawing
 
 		gl.ClearColor(0.0, 0.0, 0.0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
@@ -102,6 +99,6 @@ func main() {
 		program.SetUniformMat4("projection", cam.ProjectionMatrix)
 		mesh.Draw()
 
-		window.EndFrame()
+		window.EndFrame() //end drawing
 	}
 }

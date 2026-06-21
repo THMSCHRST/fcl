@@ -2,6 +2,7 @@ package w
 
 import (
 	"fcl/td"
+	"math"
 	"runtime"
 	"time"
 
@@ -28,6 +29,8 @@ func NewWindow(size td.Vec2, title string) (*Window, error) {
 	glfw.WindowHint(glfw.ContextVersionMinor, 6)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
+
+	glfw.WindowHint(glfw.Resizable, glfw.False)
 
 	window, err := glfw.CreateWindow(int(size.X), int(size.Y), title, nil, nil)
 	if err != nil {
@@ -88,3 +91,6 @@ func (w *Window) GetDeltaTime() float32 {
 func (w *Window) IsKeyDown(key td.Key) bool {
 	return w.GlfwWindow.GetKey(glfw.Key(key)) == glfw.Press
 }
+
+
+func (w *Window) GetFPS() float32 {return float32(math.Round(float64(1/w.GetDeltaTime())))}
