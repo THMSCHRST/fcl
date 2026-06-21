@@ -26,7 +26,7 @@ func NewCamera(pos, dir td.Vec3, window Window, fov float32) Camera {
 		),
 		ProjectionMatrix: mgl32.Perspective(
 			mgl32.DegToRad(fov),
-			float32(w/h),
+			float32(w)/float32(h),
 			0.1,
 			100.0,
 		),

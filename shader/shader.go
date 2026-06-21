@@ -77,6 +77,7 @@ func NewProgram(vertexSrc, fragmentSrc string) (*Program, error) {
 	var status int32
 	gl.GetProgramiv(program, gl.LINK_STATUS, &status) // get the link status
 	if status == gl.FALSE {
+		gl.DeleteProgram(program) //fix memory leak
 		var logLength int32
 		gl.GetProgramiv(program, gl.INFO_LOG_LENGTH, &logLength)
 		log := strings.Repeat("\x00", int(logLength+1))

@@ -5,7 +5,6 @@ import (
 	"fcl/shader"
 	"fcl/td"
 	"fcl/w"
-	"fmt"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -33,27 +32,25 @@ func main() {
 	base2 := td.NewVec3(1, -1, -1)
 	base3 := td.NewVec3(1, -1, 1)
 	base4 := td.NewVec3(-1, -1, 1)
-	color := td.NewCol(33, 0, 78)
 
-	builder.AddTriangle(mesh.NewTriangle(apex, base1, base2, color))
-	builder.AddTriangle(mesh.NewTriangle(apex, base2, base3, color))
-	builder.AddTriangle(mesh.NewTriangle(apex, base3, base4, color))
-	builder.AddTriangle(mesh.NewTriangle(apex, base4, base1, color))
+	builder.AddTriangle(mesh.NewTriangle(apex, base1, base2, td.NewCol(255, 0, 0)))
+	builder.AddTriangle(mesh.NewTriangle(apex, base2, base3, td.NewCol(0, 255, 0)))
+	builder.AddTriangle(mesh.NewTriangle(apex, base3, base4, td.NewCol(0, 0, 255)))
+	builder.AddTriangle(mesh.NewTriangle(apex, base4, base1, td.NewCol(255, 255, 0)))
 
-	mesh, err := builder.Build(layout) //build a mesh with a layout
+	m, err := builder.Build(layout) //build a mesh with a layout
 	td.Check(err)
 
-	defer mesh.Destroy() //prevent memory leaks
+	defer m.Destroy() //prevent memory leaks
 
 	cam := w.NewCamera(td.NewVec3(5, 0, 0), td.NewVec3(-1, 0, 0), *window, 45) //creates a new camera
 
 	var angle float32
 	pos := td.NewVec3(0, 0, 0)
-	var speed float32 = 4
+	var speed float32 = 2
 
 	for !window.ShouldClose() {
 		deltaTime := window.GetDeltaTime()
-		fmt.Println(window.GetFPS())
 
 		if window.IsKeyDown(td.KeyW) {
 			cam.Pos.X -= speed * deltaTime
@@ -93,7 +90,7 @@ func main() {
 		program.SetUniformMat4("model", modelMatrix)
 		program.SetUniformMat4("view", cam.ViewMatrix)
 		program.SetUniformMat4("projection", cam.ProjectionMatrix)
-		mesh.Draw()
+		m.Draw()
 
 		window.EndFrame() //end drawing
 	}

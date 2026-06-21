@@ -13,6 +13,7 @@ import (
 type Window struct {
 	GlfwWindow *glfw.Window
 	lastFrame  time.Time
+	deltaTime float32
 }
 
 // NewWindow initializes glfw and opengl and returns a window with the given parameters.
@@ -70,6 +71,7 @@ func (w *Window) Close() {
 func (w *Window) EndFrame() {
 	w.SwapBuffers()
 	w.PollEvents()
+	w.deltaTime = float32(time.Since(w.lastFrame).Seconds())
 }
 
 func (w *Window) StartFrame() {
@@ -88,7 +90,7 @@ func (w *Window) PollEvents() {
 }
 
 func (w *Window) GetDeltaTime() float32 {
-	return float32(time.Since(w.lastFrame).Seconds())
+	return w.deltaTime
 }
 
 func (w *Window) IsKeyDown(key td.Key) bool {
