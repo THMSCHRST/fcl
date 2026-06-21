@@ -1,8 +1,7 @@
-package render
+package w
 
 import (
 	"fcl/td"
-	"fcl/w"
 
 	"github.com/go-gl/mathgl/mgl32"
 )
@@ -15,7 +14,7 @@ type Camera struct {
 	FOV              float32
 }
 
-func NewCamera(pos, dir td.Vec3, window w.Window, fov float32) Camera {
+func NewCamera(pos, dir td.Vec3, window Window, fov float32) Camera {
 	w, h := window.GlfwWindow.GetFramebufferSize()
 	return Camera{
 		Pos: pos,

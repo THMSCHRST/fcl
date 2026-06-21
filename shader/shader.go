@@ -1,4 +1,4 @@
-package render
+package shader
 
 /*
 #include <stdlib.h>
@@ -6,7 +6,7 @@ package render
 import "C"
 
 import (
-	"fcl/helper"
+	"fcl/td"
 	"fmt"
 	"strings"
 	"unsafe"
@@ -55,13 +55,13 @@ func compileShader(src string, shaderType uint32) (uint32, error) {
 func NewProgram(vertexSrc, fragmentSrc string) (*Program, error) {
 	// compile vertex shader
 	vertexShader, err := compileShader(vertexSrc, gl.VERTEX_SHADER)
-	helper.Check(err)
+	td.Check(err)
 
 	defer gl.DeleteShader(vertexShader)
 
 	// compile fragment
 	fragmentShader, err := compileShader(fragmentSrc, gl.FRAGMENT_SHADER)
-	helper.Check(err)
+	td.Check(err)
 
 	defer gl.DeleteShader(fragmentShader)
 

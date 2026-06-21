@@ -50,6 +50,8 @@ func NewWindow(size td.Vec2, title string) (*Window, error) {
 	gl.Viewport(0, 0, int32(w), int32(h)) // set viewport
 	gl.ClearColor(1, 1, 1, 1.0)
 
+	gl.Enable(gl.DEPTH_TEST)
+
 	return &Window{GlfwWindow: window, lastFrame: time.Now()}, nil
 }
 
@@ -71,6 +73,7 @@ func (w *Window) EndFrame() {
 }
 
 func (w *Window) StartFrame() {
+	gl.Clear(gl.DEPTH_BUFFER_BIT)
 	w.lastFrame = time.Now()
 }
 
@@ -92,5 +95,4 @@ func (w *Window) IsKeyDown(key td.Key) bool {
 	return w.GlfwWindow.GetKey(glfw.Key(key)) == glfw.Press
 }
 
-
-func (w *Window) GetFPS() float32 {return float32(math.Round(float64(1/w.GetDeltaTime())))}
+func (w *Window) GetFPS() float32 { return float32(math.Round(float64(1 / w.GetDeltaTime()))) }

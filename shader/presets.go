@@ -1,4 +1,4 @@
-package render
+package shader
 
 const (
 	DefaultVertexShader = `#version 460 core
@@ -41,34 +41,4 @@ const (
 			gl_Position = projection * view * model * vec4(aPos, 1.0);
 			color = aColor;
 		}`
-)
-
-var (
-	TriangleVertices = []float32{
-		-0.5, -0.5, 0.0, 1.0, 0.0, 0.0,
-		0.5, -0.5, 0.0, 0.0, 1.0, 0.0,
-		0.0, 0.5, 0.0, 0.0, 0.0, 1.0,
-	}
-	CubeVertices = []float32{
-		-1, -1, -1, 1, 0, 0,
-		1, -1, -1, 1, 0, 0,
-		1, 1, -1, 1, 0, 0,
-		-1, 1, -1, 1, 0, 0,
-		-1, -1, 1, 0, 1, 0,
-		1, -1, 1, 0, 1, 0,
-		1, 1, 1, 0, 1, 0,
-		-1, 1, 1, 0, 1, 0,
-	}
-	CubeIndices = []uint32{
-		0, 1, 2, 0, 2, 3,
-		4, 5, 6, 4, 6, 7,
-		0, 3, 7, 0, 7, 4,
-		1, 5, 6, 1, 6, 2,
-		0, 4, 5, 0, 5, 1,
-		3, 2, 6, 3, 6, 7,
-	}
-	DefaultLayout = []Attribute{
-		{Index: 0, Size: 3, Offset: 0},
-		{Index: 1, Size: 3, Offset: 12},
-	}
 )

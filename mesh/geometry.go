@@ -1,6 +1,36 @@
-package meshUtil
+package mesh
 
-func GenerateBox(width, height, depth float32) ([]float32, []uint32) {
+var (
+	TriangleVertices = []float32{
+		-0.5, -0.5, 0.0, 1.0, 0.0, 0.0,
+		0.5, -0.5, 0.0, 0.0, 1.0, 0.0,
+		0.0, 0.5, 0.0, 0.0, 0.0, 1.0,
+	}
+	CubeVertices = []float32{
+		-1, -1, -1, 1, 0, 0,
+		1, -1, -1, 1, 0, 0,
+		1, 1, -1, 1, 0, 0,
+		-1, 1, -1, 1, 0, 0,
+		-1, -1, 1, 0, 1, 0,
+		1, -1, 1, 0, 1, 0,
+		1, 1, 1, 0, 1, 0,
+		-1, 1, 1, 0, 1, 0,
+	}
+	CubeIndices = []uint32{
+		0, 1, 2, 0, 2, 3,
+		4, 5, 6, 4, 6, 7,
+		0, 3, 7, 0, 7, 4,
+		1, 5, 6, 1, 6, 2,
+		0, 4, 5, 0, 5, 1,
+		3, 2, 6, 3, 6, 7,
+	}
+	DefaultLayout = []Attribute{
+		{Index: 0, Size: 3, Offset: 0},
+		{Index: 1, Size: 3, Offset: 12},
+	}
+)
+
+func GenRec(width, height, depth float32) ([]float32, []uint32) {
 	hw, hh, hd := width/2, height/2, depth/2
 
 	v := []float32{
@@ -25,7 +55,7 @@ func GenerateBox(width, height, depth float32) ([]float32, []uint32) {
 	return v, i
 }
 
-func GeneratePlane(width, depth float32, segments int) ([]float32, []uint32) {
+func GenPlane(width, depth float32, segments int) ([]float32, []uint32) {
 	hw, hd := width/2, depth/2
 	stepX := width / float32(segments)
 	stepZ := depth / float32(segments)
