@@ -1,4 +1,4 @@
-package w
+package window
 
 import (
 	"fcl/td"
@@ -40,4 +40,26 @@ func (c *Camera) Update() {
 		mgl32.Vec3{c.Dir.X + c.Pos.X, c.Dir.Y + c.Pos.Y, c.Dir.Z + c.Pos.Z},
 		mgl32.Vec3{0, 1, 0},
 	)
+}
+
+func (c *Camera) Yaw(angle float32) {
+    q := mgl32.QuatRotate(angle, mgl32.Vec3{0, 1, 0})
+    dir := td.Vec3Mgl32(c.Dir)
+    c.Dir = td.Mgl32Vec3(q.Rotate(dir))
+    c.Update()
+}
+
+func (c *Camera) Pitch(angle float32) {
+    up := mgl32.Vec3{0, 1, 0}
+    forward := td.Vec3Mgl32(c.Dir)
+
+    right := forward.Cross(up)
+    if right.Len() < 0.001 {
+        right = mgl32.Vec3{1, 0, 0}
+    }
+    right = right.Normalize()
+
+    q := mgl32.QuatRotate(angle, right)
+    c.Dir = td.Mgl32Vec3(q.Rotate(forward))
+    c.Update()
 }

@@ -1,4 +1,4 @@
-package w
+package window
 
 import (
 	"fcl/td"

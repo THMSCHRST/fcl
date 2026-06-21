@@ -4,16 +4,16 @@ import (
 	"fcl/mesh"
 	"fcl/shader"
 	"fcl/td"
-	"fcl/w"
+	"fcl/window"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 )
 
 func main() {
-	window, err := w.NewWindow(td.NewVec2(500, 500), "Window") //This creates a new window
+	win, err := window.NewWindow(td.NewVec2(500, 500), "Window") //This creates a new window
 	td.Check(err)
-	defer window.Close() //Close the window after main func exit
+	defer win.Close() //Close the window after main func exit
 
 	//A program is a bundle of vertex and fragment shader that is used to render a mesh
 	program, err := shader.NewProgram(shader.VertexShader3D, shader.DefaultFragmentShader) //shader.VertexShader3D needs a 'model' uniform which is a transform, a 'view' uniform which should be cam.ViewMatrix and a 'projection' uniform which should be cam.ProjectionMatrix
@@ -43,31 +43,31 @@ func main() {
 
 	defer m.Destroy() //prevent memory leaks
 
-	cam := w.NewCamera(td.NewVec3(5, 0, 0), td.NewVec3(-1, 0, 0), *window, 45) //creates a new camera
+	cam := window.NewCamera(td.NewVec3(5, 0, 0), td.NewVec3(-1, 0, 0), *win, 45) //creates a new camera
 
 	var angle float32
 	pos := td.NewVec3(0, 0, 0)
 	var speed float32 = 2
 
-	for !window.ShouldClose() {
-		deltaTime := window.GetDeltaTime()
+	for !win.ShouldClose() {
+		deltaTime := win.GetDeltaTime()
 
-		if window.IsKeyDown(td.KeyW) {
+		if win.IsKeyDown(td.KeyW) {
 			cam.Pos.X -= speed * deltaTime
 		}
-		if window.IsKeyDown(td.KeyS) {
+		if win.IsKeyDown(td.KeyS) {
 			cam.Pos.X += speed * deltaTime
 		}
-		if window.IsKeyDown(td.KeyA) {
+		if win.IsKeyDown(td.KeyA) {
 			cam.Pos.Z += speed * deltaTime
 		}
-		if window.IsKeyDown(td.KeyD) {
+		if win.IsKeyDown(td.KeyD) {
 			cam.Pos.Z -= speed * deltaTime
 		}
-		if window.IsKeyDown(td.KeySpace) {
+		if win.IsKeyDown(td.KeySpace) {
 			cam.Pos.Y += speed * deltaTime
 		}
-		if window.IsKeyDown(td.KeyLeftShift) {
+		if win.IsKeyDown(td.KeyLeftShift) {
 			cam.Pos.Y -= speed * deltaTime
 		}
 
@@ -81,7 +81,7 @@ func main() {
 
 		modelMatrix := translationMatrix.Mul4(rotationMatrix)
 
-		window.StartFrame() //start drawing
+		win.StartFrame() //start drawing
 
 		gl.ClearColor(0.0, 0.0, 0.0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
@@ -92,6 +92,6 @@ func main() {
 		program.SetUniformMat4("projection", cam.ProjectionMatrix)
 		m.Draw()
 
-		window.EndFrame() //end drawing
+		win.EndFrame() //end drawing
 	}
 }
