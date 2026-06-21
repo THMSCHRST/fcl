@@ -6,10 +6,12 @@ import (
 
 // Mesh holds the geometry data on the GPU.
 type Mesh struct {
-	VAO uint32
-	VBO uint32
-	// EBO uint32 // implement later
+	VAO         uint32
+	VBO         uint32
+	EBO         uint32
 	vertexCount int32
+	indexCount  int32
+	isIndexed   bool
 }
 
 // NewMesh creates a mesh from a slice of vertices and optional slice of indices.
@@ -34,28 +36,37 @@ func NewMesh(vertices []float32, indices []uint32) (*Mesh, error) {
 	gl.VertexAttribPointerWithOffset(1, 3, gl.FLOAT, false, 6*4, 3*4)
 	gl.EnableVertexAttribArray(1)
 
-	// handle idx buffer for future
-	if len(indices) > 0 {
+	isIndexed := len(indices) > 0
+	var indexCount int32
+	if isIndexed {
 		gl.GenBuffers(1, &ebo)
 		gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo)
 		gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(indices)*4, gl.Ptr(indices), gl.STATIC_DRAW)
+		indexCount = int32(len(indices))
 	}
 
 	// unbind vao
 	gl.BindVertexArray(0)
 
 	return &Mesh{
-		VAO: vao,
-		VBO: vbo,
-		// EBO: ebo, // implement later
+		VAO:         vao,
+		VBO:         vbo,
+		EBO:         ebo,
 		vertexCount: int32(len(vertices) / 6), // 6 float per vertex
+		indexCount:  indexCount,
+		isIndexed:   isIndexed,
 	}, nil
 }
 
 // Draw renders the mesh using the active program.
 func (m *Mesh) Draw() {
 	gl.BindVertexArray(m.VAO)
-	gl.DrawArrays(gl.TRIANGLES, 0, m.vertexCount)
+	if m.isIndexed {
+		gl.DrawElementsWithOffset(gl.TRIANGLES, m.indexCount, gl.UNSIGNED_INT, 0)
+	} else {
+		// fallback no index
+		gl.DrawArrays(gl.TRIANGLES, 0, m.vertexCount)
+	}
 	gl.BindVertexArray(0)
 }
 
@@ -63,5 +74,7 @@ func (m *Mesh) Draw() {
 func (m *Mesh) Destroy() {
 	gl.DeleteVertexArrays(1, &m.VAO)
 	gl.DeleteBuffers(1, &m.VBO)
-	// gl.DeleteBuffers(1, &m.EBO) //implement later
+	if m.isIndexed {
+		gl.DeleteBuffers(1, &m.EBO)
+	}
 }

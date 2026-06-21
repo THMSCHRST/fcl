@@ -101,7 +101,5 @@ func (p *Program) Destroy() {
 func (p *Program) SetUniformMat4(name string, mat mgl32.Mat4) {
 	cName := gl.Str(name + "\x00")
 	location := gl.GetUniformLocation(p.ID, cName)
-
-	// go matrix to c
 	gl.UniformMatrix4fv(location, 1, false, &mat[0])
 }

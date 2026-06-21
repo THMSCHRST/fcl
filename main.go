@@ -20,46 +20,53 @@ func main() {
 	helper.Check(err)
 	defer window.Close()
 
-	program, err := render.NewProgram(render.TransformVertexShader, render.DefaultFragmentShader)
+	program, err := render.NewProgram(render.VertexShader3D, render.DefaultFragmentShader)
 	helper.Check(err)
 
 	defer program.Destroy()
 
-	// triangle
-	vertices := []float32{
-		// pos             // col
-		-0.5, -0.5, 0.0, 1.0, 0.0, 0.0, // r
-		0.5, -0.5, 0.0, 0.0, 1.0, 0.0, // g
-		0.0, 0.5, 0.0, 0.0, 0.0, 1.0, // b
-	}
-	mesh, err := render.NewMesh(vertices, nil)
+	mesh, err := render.NewMesh(render.CubeVertices, render.CubeIndices)
 	helper.Check(err)
 
 	defer mesh.Destroy()
+
+	cam := render.NewCamera(td.NewVec3(5, 0, 0), td.NewVec3(-1, 0, 0), *window, 45)
 
 	var angle float32
 	pos := td.NewVec3(0, 0, 0)
 	var speed float32 = 4
 
+	render.EnableDepth()
+
 	for !window.ShouldClose() {
 		deltaTime := window.GetDeltaTime()
 
 		if window.IsKeyDown(td.KeyW) {
-			pos.Y += speed * deltaTime
+			cam.Pos.X -= speed * deltaTime
 		}
 		if window.IsKeyDown(td.KeyS) {
-			pos.Y -= speed * deltaTime
+			cam.Pos.X += speed * deltaTime
 		}
 		if window.IsKeyDown(td.KeyA) {
-			pos.X -= speed * deltaTime
+			cam.Pos.Z += speed * deltaTime
 		}
 		if window.IsKeyDown(td.KeyD) {
-			pos.X += speed * deltaTime
+			cam.Pos.Z -= speed * deltaTime
+		}
+		if window.IsKeyDown(td.KeySpace) {
+			cam.Pos.Y += speed * deltaTime
+		}
+		if window.IsKeyDown(td.KeyLeftShift) {
+			cam.Pos.Y -= speed * deltaTime
 		}
 
 		angle += deltaTime
 
-		rotationMatrix := mgl32.HomogRotate3D(angle, mgl32.Vec3{0, 0, 1})
+		cam.Update()
+
+		render.UpdateDepth()
+
+		rotationMatrix := mgl32.HomogRotate3D(angle, mgl32.Vec3{0, 1, 0})
 
 		translationMatrix := mgl32.Translate3D(pos.X, pos.Y, pos.Z)
 
@@ -72,6 +79,8 @@ func main() {
 
 		program.Use()
 		program.SetUniformMat4("model", modelMatrix)
+		program.SetUniformMat4("view", cam.ViewMatrix)
+		program.SetUniformMat4("projection", cam.ProjectionMatrix)
 		mesh.Draw()
 
 		window.EndFrame()

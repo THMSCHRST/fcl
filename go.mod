@@ -7,4 +7,4 @@ require (
 	github.com/go-gl/glfw/v3.4/glfw v0.1.0-pre.1
 )
 
-require github.com/go-gl/mathgl v1.2.0 // indirect
+require github.com/go-gl/mathgl v1.2.0

@@ -10,7 +10,7 @@ import (
 )
 
 type Window struct {
-	glfwWindow *glfw.Window
+	GlfwWindow *glfw.Window
 	lastFrame  time.Time
 }
 
@@ -47,17 +47,17 @@ func NewWindow(size td.Vec2, title string) (*Window, error) {
 	gl.Viewport(0, 0, int32(w), int32(h)) // set viewport
 	gl.ClearColor(1, 1, 1, 1.0)
 
-	return &Window{glfwWindow: window, lastFrame: time.Now()}, nil
+	return &Window{GlfwWindow: window, lastFrame: time.Now()}, nil
 }
 
 // for w.ShouldClose() {//code here}
 func (w *Window) ShouldClose() bool {
-	return w.glfwWindow.ShouldClose()
+	return w.GlfwWindow.ShouldClose()
 }
 
 // Close terminates glfw. You probably need to use this with 'defer w.Close()'.
 func (w *Window) Close() {
-	w.glfwWindow.Destroy()
+	w.GlfwWindow.Destroy()
 	glfw.Terminate()
 }
 
@@ -71,9 +71,9 @@ func (w *Window) StartFrame() {
 	w.lastFrame = time.Now()
 }
 
-//swap to new frame
+// swap to new frame
 func (w *Window) SwapBuffers() {
-	w.glfwWindow.SwapBuffers()
+	w.GlfwWindow.SwapBuffers()
 }
 
 // PollEvents processes window events (input, resize, etc).
@@ -86,5 +86,5 @@ func (w *Window) GetDeltaTime() float32 {
 }
 
 func (w *Window) IsKeyDown(key td.Key) bool {
-	return w.glfwWindow.GetKey(glfw.Key(key)) == glfw.Press
+	return w.GlfwWindow.GetKey(glfw.Key(key)) == glfw.Press
 }
