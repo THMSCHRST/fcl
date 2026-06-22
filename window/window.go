@@ -52,6 +52,8 @@ func NewWindow(size td.Vec2, title string) (*Window, error) {
 	gl.ClearColor(1, 1, 1, 1.0)
 
 	gl.Enable(gl.DEPTH_TEST)
+	gl.Enable(gl.CULL_FACE)
+	gl.CullFace(gl.BACK)
 
 	return &Window{GlfwWindow: window, lastFrame: time.Now()}, nil
 }

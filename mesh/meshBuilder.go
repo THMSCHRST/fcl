@@ -5,8 +5,8 @@ import (
 )
 
 type MeshBuilder struct {
-	vertices []float32
-	indices  []uint32
+	Vertices []float32
+	Indices  []uint32
 	offset   uint32
 }
 
@@ -35,28 +35,28 @@ func NewQuad(p1, p2, p3, p4 td.Vec3, col td.Col) Quad {
 
 func NewMeshBuilder() *MeshBuilder {
 	return &MeshBuilder{
-		vertices: []float32{},
-		indices:  []uint32{},
+		Vertices: []float32{},
+		Indices:  []uint32{},
 		offset:   0,
 	}
 }
 
 func (mb *MeshBuilder) AddTriangle(t Triangle) {
 	col := td.ColToMGL32(t.Col)
-	mb.vertices = append(mb.vertices,
+	mb.Vertices = append(mb.Vertices,
 		t.P1.X, t.P1.Y, t.P1.Z,
 		col[0], col[1], col[2],
 	)
-	mb.vertices = append(mb.vertices,
+	mb.Vertices = append(mb.Vertices,
 		t.P2.X, t.P2.Y, t.P2.Z,
 		col[0], col[1], col[2],
 	)
-	mb.vertices = append(mb.vertices,
+	mb.Vertices = append(mb.Vertices,
 		t.P3.X, t.P3.Y, t.P3.Z,
 		col[0], col[1], col[2],
 	)
 
-	mb.indices = append(mb.indices, mb.offset, mb.offset+1, mb.offset+2)
+	mb.Indices = append(mb.Indices, mb.offset, mb.offset+1, mb.offset+2)
 
 	mb.offset += 3
 }
@@ -67,12 +67,37 @@ func (mb *MeshBuilder) AddQuad(q Quad) {
 }
 
 func (mb *MeshBuilder) Build(layout []Attribute) (*Mesh, error) {
-	return NewMesh(mb.vertices, mb.indices, layout)
+	/*
+	newTriangles := []Triangle{}
+
+    for i := 0; i < len(mb.Vertices); i += 18 {
+        v1 := td.NewVec3(mb.Vertices[i], mb.Vertices[i+1], mb.Vertices[i+2])
+        v2 := td.NewVec3(mb.Vertices[i+6], mb.Vertices[i+7], mb.Vertices[i+8])
+        v3 := td.NewVec3(mb.Vertices[i+12], mb.Vertices[i+13], mb.Vertices[i+14])
+
+		color := td.NewCol(
+			mb.Vertices[i+3]*255,
+			mb.Vertices[i+4]*255,
+			mb.Vertices[i+5]*255,
+		)
+
+        newTriangles = append(newTriangles, NewTriangle(v1, v2, v3, color))
+    }
+
+    mb.Vertices = []float32{}
+    mb.Indices = []uint32{}
+    mb.offset = 0
+
+    for _, t := range newTriangles {
+        mb.AddTriangle(t)
+    }*/
+
+    return NewMesh(mb.Vertices, mb.Indices, layout)
 }
 
 func (mb *MeshBuilder) Clear() {
-	mb.vertices = mb.vertices[:0]
-	mb.indices = mb.indices[:0]
+	mb.Vertices = mb.Vertices[:0]
+	mb.Indices = mb.Indices[:0]
 	mb.offset = 0
 }
 
@@ -81,5 +106,5 @@ func (mb *MeshBuilder) VertexCount() int {
 }
 
 func (mb *MeshBuilder) TriangleCount() int {
-	return len(mb.indices) / 3
+	return len(mb.Indices) / 3
 }
